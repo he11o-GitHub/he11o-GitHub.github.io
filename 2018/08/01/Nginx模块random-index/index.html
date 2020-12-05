@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Nginx模块random_index | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="编译选项–with-http_random_index_module  &#x2F;&#x2F;目录中选择一个随机主页 random_index_module   &#x2F;&#x2F;限制在location配置里 准备随机主页[root@Nginx ~]# cd &#x2F;opt&#x2F;app&#x2F;code&#x2F; [root@Nginx code]# ll total 12 -rw-r--r-- 1 root root 6 Dec  8 03:51 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx模块random_index">
+<meta property="og:url" content="http://example.com/2018/08/01/Nginx%E6%A8%A1%E5%9D%97random-index/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="编译选项–with-http_random_index_module  &#x2F;&#x2F;目录中选择一个随机主页 random_index_module   &#x2F;&#x2F;限制在location配置里 准备随机主页[root@Nginx ~]# cd &#x2F;opt&#x2F;app&#x2F;code&#x2F; [root@Nginx code]# ll total 12 -rw-r--r-- 1 root root 6 Dec  8 03:51 1">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/eNst0A7.png">
+<meta property="og:image" content="https://i.imgur.com/ls1RqAw.png">
+<meta property="article:published_time" content="2018-08-01T12:48:16.000Z">
+<meta property="article:modified_time" content="2018-12-08T10:13:58.591Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/eNst0A7.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Nginx模块random-index" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/08/01/Nginx%E6%A8%A1%E5%9D%97random-index/" class="article-date">
+  <time datetime="2018-08-01T12:48:16.000Z" itemprop="datePublished">2018-08-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Nginx模块random_index
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<h1 id="编译选项"><a href="#编译选项" class="headerlink" title="编译选项"></a>编译选项</h1><p>–with-http_random_index_module  //<br>目录中选择一个随机主页</p>
+<p>random_index_module   //限制在location配置里</p>
+<h1 id="准备随机主页"><a href="#准备随机主页" class="headerlink" title="准备随机主页"></a>准备随机主页</h1><pre><code>[root@Nginx ~]# cd /opt/app/code/
+[root@Nginx code]# ll
+total 12
+-rw-r--r-- 1 root root 6 Dec  8 03:51 1.html
+-rw-r--r-- 1 root root 6 Dec  8 03:51 2.html
+-rw-r--r-- 1 root root 6 Dec  8 03:51 3.html</code></pre>
+<h1 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h1><pre><code>11     location / &#123;
+12         #root   /usr/share/nginx/html;
+13         root   /opt/app/code;   //随机页面目录
+14         random_index on;   //开启功能
+15         #index  index.html index.htm;
+16     &#125;
+17</code></pre>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>访问:<a target="_blank" rel="noopener" href="http://192.168.0.77/">http://192.168.0.77/</a><br><img src="https://i.imgur.com/eNst0A7.png"><br><img src="https://i.imgur.com/ls1RqAw.png"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2018/08/01/Nginx%E6%A8%A1%E5%9D%97random-index/" data-id="ckibpb0eh000p8cj03ome5q4c" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/02/Nginx%E7%9A%84%E8%AF%B7%E6%B1%82%E9%99%90%E5%88%B6%EF%BC%88%E8%BF%9E%E6%8E%A5%E9%99%90%E5%88%B6%E5%92%8C%E8%AF%B7%E6%B1%82%E9%99%90%E5%88%B6%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Nginx的请求限制（连接限制和请求限制）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/01/Nginx%E6%A8%A1%E5%9D%97sub-status/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Nginx模块sub_status</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LVS/">LVS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Nginx/">Nginx</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Zabbix/">Zabbix</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/12/02/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/03/CloudBoot/">CloudBoot</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/01/LVS%E9%9B%86%E7%BE%A4-NAT%E6%A8%A1%E5%BC%8F/">LVS集群-NAT模式</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/">Docker私有registry Harbor</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/12/Docker%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86/">Docker镜像管理</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

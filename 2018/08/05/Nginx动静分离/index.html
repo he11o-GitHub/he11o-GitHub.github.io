@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Nginx动静分离 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一.动静分离通过中间件将动态请求和静态请求分离&gt;&gt;减少不必要的请求消耗，减少请求延时。  ‘    二.配置动静分离2.1nginx服务器 redhat7 Nginx 10.10.11.221   tomcat服务器 redhat7 tomcat+jdk 10.10.11.19    2.2 准备测试文件A：[root@liujie code]# vim &#x2F;opt&#x2F;app&#x2F;code&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx动静分离">
+<meta property="og:url" content="http://example.com/2018/08/05/Nginx%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一.动静分离通过中间件将动态请求和静态请求分离&gt;&gt;减少不必要的请求消耗，减少请求延时。  ‘    二.配置动静分离2.1nginx服务器 redhat7 Nginx 10.10.11.221   tomcat服务器 redhat7 tomcat+jdk 10.10.11.19    2.2 准备测试文件A：[root@liujie code]# vim &#x2F;opt&#x2F;app&#x2F;code&#x2F;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/01SKLn0.png">
+<meta property="og:image" content="https://i.imgur.com/hh6Ka6h.png">
+<meta property="og:image" content="https://i.imgur.com/g1HX1ae.png">
+<meta property="og:image" content="https://i.imgur.com/ZvyD97G.png">
+<meta property="og:image" content="https://i.imgur.com/m0Uj47s.png">
+<meta property="article:published_time" content="2018-08-04T16:30:22.000Z">
+<meta property="article:modified_time" content="2018-12-16T10:23:22.886Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/01SKLn0.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Nginx动静分离" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/08/05/Nginx%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB/" class="article-date">
+  <time datetime="2018-08-04T16:30:22.000Z" itemprop="datePublished">2018-08-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Nginx动静分离
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<h1 id="一-动静分离"><a href="#一-动静分离" class="headerlink" title="一.动静分离"></a>一.动静分离</h1><p>通过中间件将动态请求和静态请求分离&gt;&gt;减少不必要的请求消耗，减少请求延时。  ‘<br><img src="https://i.imgur.com/01SKLn0.png">  </p>
+<hr>
+<h1 id="二-配置动静分离"><a href="#二-配置动静分离" class="headerlink" title="二.配置动静分离"></a>二.配置动静分离</h1><h2 id="2-1"><a href="#2-1" class="headerlink" title="2.1"></a>2.1</h2><p>nginx服务器 redhat7 Nginx 10.10.11.221  </p>
+<p>tomcat服务器 redhat7 tomcat+jdk 10.10.11.19  </p>
+<hr>
+<h2 id="2-2-准备测试文件"><a href="#2-2-准备测试文件" class="headerlink" title="2.2 准备测试文件"></a>2.2 准备测试文件</h2><h3 id="A："><a href="#A：" class="headerlink" title="A："></a>A：</h3><p>[root@liujie code]# vim /opt/app/code/test_mysite.html  </p>
+<pre><code> &lt;html lang=&quot;en&quot;&gt;
+ &lt;head&gt;  
+ &lt;meta charset=&quot;UTF-8&quot; /&gt;  
+ &lt;title&gt;测试ajax和跨域访问&lt;/title&gt;  
+ &lt;script src=&quot;http://libs.baidu.com/jquery/2.1.4/jquery.min.js&quot;&gt;&lt;/script&gt;  
+ &lt;/head&gt;
+ &lt;script type=&quot;text/javascript&quot;&gt;  
+$(document).ready(function()&#123;  
+        $.ajax(&#123;      //ajax调用 进行动态请求
+        type: &quot;GET&quot;,  
+        url: &quot;http://liujie.com/java_test.jsp&quot;,
+        success: function(data) &#123;
+               $(&quot;#get_data&quot;).html(data)
+       &#125;,
+        error: function() &#123;  
+               alert(&quot;fail!!!,请刷新再试!&quot;);  
+         &#125;  
+      &#125;);  
+ &#125;);  
+&lt;/script&gt;
+&lt;body&gt;
+     &lt;h1&gt;测试动静分离&lt;/h1&gt;   
+     &lt;img src=&quot;http://liujie.com/img/nginx.png&quot;/&gt;  //请求一张静态图片
+     &lt;div id=&quot;get_data&quot;&gt;&lt;div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3 id="B：为nginx静态请求准备图片"><a href="#B：为nginx静态请求准备图片" class="headerlink" title="B：为nginx静态请求准备图片"></a>B：为nginx静态请求准备图片</h3><pre><code>[root@liujie code]# cd /opt/app/code/img/
+[root@liujie img]# ll
+total 4
+ -rw-r--r-- 1 root root 2103 Aug  8  2017 nginx.png  </code></pre>
+<h3 id="C-准备tomcat的动态页面"><a href="#C-准备tomcat的动态页面" class="headerlink" title="C:准备tomcat的动态页面"></a>C:准备tomcat的动态页面</h3><pre><code>[root@tomcat ROOT]# cd /usr/local/tomcat/webapps/ROOT/
+[root@tomcat ROOT]# ll  
+total 192  
+ -rw-r----- 1 root root 27235 Nov  3 13:42 asf-logo-wide.svg  
+ -rw-r----- 1 root root   713 Nov  3 13:39 bg-button.png
+ -rw-r----- 1 root root  1918 Nov  3 13:39 bg-middle.png
+ -rw-r----- 1 root root  1392 Nov  3 13:39 bg-nav-item.png
+ -rw-r----- 1 root root  1401 Nov  3 13:39 bg-nav.png
+ -rw-r----- 1 root root  3103 Nov  3 13:39 bg-upper.png
+ -rw-r----- 1 root root 21630 Nov  3 13:39 favicon.ico
+ -rw-r----- 1 root root 12290 Nov  3 13:42 index.jsp
+ -rw-r--r-- 1 root root   343 Aug  8  2017 java_test.jsp    //动态页面
+ -rw-r----- 1 root root  7142 Nov  3 13:42 RELEASE-NOTES.txt
+ -rw-r----- 1 root root  5581 Nov  3 13:42 tomcat.css
+ -rw-r----- 1 root root  2066 Nov  3 13:39 tomcat.gif  </code></pre>
+<p>vim  java_test.jsp   //用于生成动态数字  </p>
+<pre><code>&lt;%@ page language=&quot;java&quot; import=&quot;java.util.*&quot; pageEncoding=&quot;utf-8&quot;%&gt;
+&lt;HTML&gt;
+&lt;HEAD&gt;
+    &lt;TITLE&gt;JSP Test Page&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+    &lt;%
+        Random rand = new Random();
+        out.println(&quot;&lt;h1&gt;Random number:&lt;/h1&gt;&quot;);
+        out.println(rand.nextInt(99)+100);
+    %&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;</code></pre>
+<hr>
+<h2 id="2-3-新建nginx下虚拟server"><a href="#2-3-新建nginx下虚拟server" class="headerlink" title="2.3 新建nginx下虚拟server"></a>2.3 新建nginx下虚拟server</h2><p>[root@liujie code]# vim /etc/nginx/conf.d/test_mysite.conf</p>
+<pre><code>upstream java_api&#123; 
+server 10.10.11.19:8080;  // 转发的服务器，upstream 为负载均衡做准备
+ &#125;
+ server &#123;
+listen       80;
+server_name  liujie.com;
+
+#charset koi8-r;
+access_log  /var/log/nginx/log/host.access.log  main;
+root /opt/app/code;  // 静态资源存放目录
+
+location ~ .*.jsp$ &#123;
+    proxy_pass http://java_api;   // 动态请求的转发
+    proxy_set_header Host $host;
+    #index  index.html index.htm;
+&#125;
+
+
+location ~ \.(jpg|png|gif)$ &#123;   //  静态请求直接读取
+    expires 1h;
+    gzip on;
+&#125;
+
+ location /&#123;
+    index  index.html index.htm;
+
+&#125;
+
+error_page   500 502 503 504 404  /50x.html;
+location = /50x.html &#123;
+    root   /usr/share/nginx/html;
+&#125;  
+
+ &#125;</code></pre>
+<hr>
+<h1 id="三-测试页面"><a href="#三-测试页面" class="headerlink" title="三.测试页面"></a>三.测试页面</h1><p>重启nginx tomcat </p>
+<h2 id="3-1-需要配置谷歌浏览器，使浏览器支持跨域"><a href="#3-1-需要配置谷歌浏览器，使浏览器支持跨域" class="headerlink" title="3.1 需要配置谷歌浏览器，使浏览器支持跨域"></a>3.1 需要配置谷歌浏览器，使浏览器支持跨域</h2><p>首先需要关闭谷歌浏览器的所有窗口<br>右击谷歌浏览器图标——&gt;属性。弹出属性对话框。在目标栏最后添加 –args –disable-web-security –user-data-dir 注意空格<br><img src="https://i.imgur.com/hh6Ka6h.png"></p>
+<p>再次打开谷歌会提示：<br><img src="https://i.imgur.com/g1HX1ae.png">  </p>
+<hr>
+<h2 id="3-2访问页面："><a href="#3-2访问页面：" class="headerlink" title="3.2访问页面："></a>3.2访问页面：</h2><p>刷新数字会变 则请求到了tomcat<br><img src="https://i.imgur.com/ZvyD97G.png"><br>停止tomcat：<br>静态页面正常展示<br><img src="https://i.imgur.com/m0Uj47s.png"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2018/08/05/Nginx%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB/" data-id="ckibpb0eh000o8cj0200a6osg" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/05/Nginx%E7%9A%84https%E6%9C%8D%E5%8A%A1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Nginx的https服务
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/04/Nginx%E4%BD%9C%E4%B8%BA%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Nginx作为缓存服务</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LVS/">LVS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Nginx/">Nginx</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Zabbix/">Zabbix</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/12/02/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/03/CloudBoot/">CloudBoot</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/01/LVS%E9%9B%86%E7%BE%A4-NAT%E6%A8%A1%E5%BC%8F/">LVS集群-NAT模式</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/">Docker私有registry Harbor</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/12/Docker%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86/">Docker镜像管理</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

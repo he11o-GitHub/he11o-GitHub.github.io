@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Docker私有registry Harbor | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一. Harbor  简介 Harbor是一个用于存储和分发Docker镜像的企业级Registry服务器，通过添加一些企业必需的功能特性，例如安全、标识和管理等，扩展了开源Docker Distribution。作为一个企业级私有Registry服务器，Harbor提供了更好的性能和安全。提升用户使用Registry构建和运行环境传输镜像的效率。Harbor支持安装在多个Registry节点的镜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker私有registry Harbor">
+<meta property="og:url" content="http://example.com/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一. Harbor  简介 Harbor是一个用于存储和分发Docker镜像的企业级Registry服务器，通过添加一些企业必需的功能特性，例如安全、标识和管理等，扩展了开源Docker Distribution。作为一个企业级私有Registry服务器，Harbor提供了更好的性能和安全。提升用户使用Registry构建和运行环境传输镜像的效率。Harbor支持安装在多个Registry节点的镜">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/GbaGfu6.png">
+<meta property="article:published_time" content="2018-12-13T11:11:23.000Z">
+<meta property="article:modified_time" content="2018-12-27T01:41:23.891Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/GbaGfu6.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Docker私有registry Harbor" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/" class="article-date">
+  <time datetime="2018-12-13T11:11:23.000Z" itemprop="datePublished">2018-12-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Docker/">Docker</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker私有registry Harbor
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="一-Harbor-简介"><a href="#一-Harbor-简介" class="headerlink" title="一. Harbor  简介"></a>一. Harbor  简介</h1><p> Harbor是一个用于存储和分发Docker镜像的企业级Registry服务器，通过添加一些企业必需的功能特性，例如安全、标识和管理等，扩展了开源Docker Distribution。作为一个企业级私有Registry服务器，Harbor提供了更好的性能和安全。提升用户使用Registry构建和运行环境传输镜像的效率。Harbor支持安装在多个Registry节点的镜像资源复制，镜像全部保存在私有Registry中， 确保数据和知识产权在公司内部网络中管控。另外，Harbor也提供了高级的安全特性，诸如用户管理，访问控制和活动审计等。   </p>
+<h2 id="1-1-Harbor组件"><a href="#1-1-Harbor组件" class="headerlink" title="1.1 Harbor组件"></a>1.1 Harbor组件</h2><ul>
+<li>Proxy：Harbor的registry, UI, token等服务，通过一个前置的反向代理统一接收浏览器、Docker客户端的请求，并将请求转发给后端不同的服务。   </li>
+<li>Registry： 负责储存Docker镜像，并处理docker push/pull 命令。由于我们要对用户进行访问控制，即不同用户对Docker image有不同的读写权限，Registry会指向一个token服务，强制用户的每次docker pull/push请求都要携带一个合法的token, Registry会通过公钥对token 进行解密验证。</li>
+<li>Core services： 这是Harbor的核心功能，主要提供以下服务：</li>
+<li>UI：提供图形化界面，帮助用户管理registry上的镜像（image）, 并对用户进行授权。</li>
+<li>webhook：为了及时获取registry 上image状态变化的情况， 在Registry上配置webhook，把状态变化传递给UI模块。</li>
+<li>token 服务：负责根据用户权限给每个docker push/pull命令签发token. Docker 客户端向Regiøstry服务发起的请求,如果不包含token，会被重定向到这里，获得token后再重新向Registry进行请求。</li>
+<li>Database：为core services提供数据库服务，负责储存用户权限、审计日志、Docker image分组信息等数据。</li>
+<li>Job Services：提供镜像远程复制功能，可以把本地镜像同步到其他Harbor实例中。</li>
+<li>Log collector：为了帮助监控Harbor运行，负责收集其他组件的log，供日后进行分析。</li>
+<li>Volnerability Scanning：对应启动组件clair。负责镜像扫描</li>
+<li>Notary：对应启动组件notary。负责镜像认证</li>
+<li>DB：对应启动组件harbor-db，负责存储project、 user、 role、replication、image_scan、access等的metadata数据。  </li>
+</ul>
+<h2 id="1-2-Harbor实现"><a href="#1-2-Harbor实现" class="headerlink" title="1.2 Harbor实现"></a>1.2 Harbor实现</h2><p>Harbor的每个组件都是以Docker容器的形式构建的，官方也是使用Docker Compose来对它进行部署。用于部署Harbor的Docker Compose模板位于 harbor/docker-compose.yml,打开这个模板文件，发现Harbor是由7个容器组成的；  </p>
+<pre><code>[root@aliyun harbor]# cd /usr/local/harbor/ //解压路径
+[root@aliyun harbor]# docker-compose ps
+Name Command State Ports
+    ------------------------------------------------------------------------------------------------------------------------------
+harbor-adminserver /harbor/harbor_adminserver Up
+harbor-db docker-entrypoint.sh mysqld Up 3306/tcp
+harbor-jobservice /harbor/harbor_jobservice Up
+harbor-log /bin/sh -c crond &amp;&amp; rm -f ... Up 127.0.0.1:1514-&gt;514/tcp
+harbor-ui /harbor/harbor_ui Up
+nginx nginx -g daemon off; Up 0.0.0.0:443-&gt;443/tcp, 0.0.0.0:4443-&gt;4443/tcp, 0.0.0.0:80-&gt;80/tcp
+registry /entrypoint.sh serve /etc/ ... Up 5000/tcp</code></pre>
+<p>nginx：nginx负责流量转发和安全验证，对外提供的流量都是从nginx中转，所以开放https的443端口，它将流量分发到后端的ui和正在docker镜像存储的docker registry。 </p>
+<p>harbor-jobservice：harbor-jobservice 是harbor的job管理模块，job在harbor里面主要是为了镜像仓库之前同步使用的;  </p>
+<p>harbor-ui：harbor-ui是web管理页面，主要是前端的页面和后端CURD的接口;  </p>
+<p>registry：registry就是docker原生的仓库，负责保存镜像。  </p>
+<p>harbor-adminserver：harbor-adminserver是harbor系统管理接口，可以修改系统配置以及获取系统信息。  </p>
+<p>这几个容器通过Docker link的形式连接在一起，在容器之间通过容器名字互相访问。对终端用户而言，只需要暴露proxy （即Nginx）的服务端口。 </p>
+<p>harbor-db：harbor-db是harbor的数据库，这里保存了系统的job以及项目、人员权限管理。由于本harbor的认证也是通过数据，在生产环节大多对接到企业的ldap中；  </p>
+<p>harbor-log：harbor-log是harbor的日志服务，统一管理harbor的日志。通过inspect可以看出容器统一将日志输出的syslog。  </p>
+<p> 这几个容器通过Docker link的形式连接在一起，这样，在容器之间可以通过容器名字互相访问。对终端用户而言，只需要暴露proxy （即Nginx）的服务端口。  </p>
+<hr>
+<h1 id="二-安装Harbor"><a href="#二-安装Harbor" class="headerlink" title="二.安装Harbor"></a>二.安装Harbor</h1><h2 id="2-1-安装准备："><a href="#2-1-安装准备：" class="headerlink" title="2.1 安装准备："></a>2.1 安装准备：</h2><p>Harbor 托管在github上  <a target="_blank" rel="noopener" href="https://github.com/vmware/harbor">https://github.com/vmware/harbor</a><br>安装配置说明 :<a target="_blank" rel="noopener" href="https://github.com/goharbor/harbor/blob/master/docs/installation_guide.md">https://github.com/goharbor/harbor/blob/master/docs/installation_guide.md</a><br>版本：<a target="_blank" rel="noopener" href="https://github.com/goharbor/harbor/releases">https://github.com/goharbor/harbor/releases</a>  </p>
+<p>安装有两种方式，一种是off-line ，一种是on-line，即离线和在线安装，离线安装需要下载的安装包较大，在线安装下载的安装包很小<br>安装前需要安装docker 和  docker-compose  </p>
+<h2 id="2-2-安装Harbor"><a href="#2-2-安装Harbor" class="headerlink" title="2.2 安装Harbor"></a>2.2 安装Harbor</h2><blockquote>
+<p>下载离线安装包  </p>
+</blockquote>
+<pre><code>[root@aliyun ~]# wget https://storage.googleapis.com/harbor-releases/harbor-offline-installer-v1.5.2.tgz   </code></pre>
+<blockquote>
+<p> 解压</p>
+</blockquote>
+<pre><code> [root@aliyun ~]# tar xf harbor-offline-installer-v1.5.2.tgz  -C /usr/local/</code></pre>
+<blockquote>
+<p>修改配置文件</p>
+</blockquote>
+<pre><code> # vim /usr/local/harbor/harbor.cfg 
+ hostname = 192.168.10.1 //服务器地址 
+ #邮箱配置 email_server = smtp.qq.com 
+ email_server_port = 25
+ email_username = unixfbi@unixfbi.com 
+ email_password =12345678 
+ email_from = UnixFBI &lt;unixfbi@unixfbi.com&gt; 
+ email_ssl = false #禁止用户注册 
+ self_registration = off #设置只有管理员可以创建项目 
+ project_creation_restriction = adminonly</code></pre>
+<blockquote>
+<p>执行安装脚本</p>
+</blockquote>
+<pre><code> # /usr/local/harbor/install.sh</code></pre>
+<blockquote>
+<p>Harbor的启动与停止</p>
+</blockquote>
+<p>Harbor 的日常运维管理是通过docker-compose来完成的，Harbor本身有多个服务进程，都放在docker容器之中运行，我们可以通过 docker-compose 来查看 </p>
+<pre><code> [root@aliyun harbor]# cd /usr/local/harbor/ //解压路径
+ [root@aliyun harbor]# docker-compose ps
+ Name Command State Ports
+ ------------------------------------------------------------------------------------------------------------------------------
+ harbor-adminserver /harbor/harbor_adminserver Up
+ harbor-db docker-entrypoint.sh mysqld Up 3306/tcp
+ harbor-jobservice /harbor/harbor_jobservice Up
+ harbor-log /bin/sh -c crond &amp;&amp; rm -f ... Up 127.0.0.1:1514-&gt;514/tcp
+ harbor-ui /harbor/harbor_ui Up
+ nginx nginx -g daemon off; Up 0.0.0.0:443-&gt;443/tcp, 0.0.0.0:4443-&gt;4443/tcp, 0.0.0.0:80-&gt;80/tcp
+ registry /entrypoint.sh serve /etc/ ... Up 5000/tcp
+
+
+ Harbor的启动和停止
+ 启动Harbor
+ # docker-compose start
+ 停止Harbor
+ # docker-comose stop
+ 重启Harbor
+ # docker-compose restart </code></pre>
+<blockquote>
+<p> 访问测试</p>
+</blockquote>
+<p>浏览器访问 192.168.10.1<br>默认账号密码： admin / Harbor12345 登录后修改密码</p>
+<p><img src="https://i.imgur.com/GbaGfu6.png"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/" data-id="ckibpb0e100018cj04c9ahoor" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/01/01/LVS%E9%9B%86%E7%BE%A4-NAT%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          LVS集群-NAT模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/12/Docker%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Docker镜像管理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LVS/">LVS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Nginx/">Nginx</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Zabbix/">Zabbix</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/12/02/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/03/CloudBoot/">CloudBoot</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/01/LVS%E9%9B%86%E7%BE%A4-NAT%E6%A8%A1%E5%BC%8F/">LVS集群-NAT模式</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/">Docker私有registry Harbor</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/12/Docker%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86/">Docker镜像管理</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

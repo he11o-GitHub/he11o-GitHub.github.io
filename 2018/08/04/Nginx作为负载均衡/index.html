@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Nginx作为负载均衡 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一.负载均衡简单的来说。可以减少服务器的压力，将原本一台服务器所要承受的访问量分给了多台，并提高了项目的可用性，当一台服务器挂掉的时候也不会导致整个项目瘫痪。     配置语法: 二.nginx实现负载均衡nginx作为负载均衡服务器，用户请求先到达nginx，再由nginx根据负载配置将请求转发至 tomcat服务器。  nginx负载均衡服务器：192.168.14.129  tomcat1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx作为负载均衡">
+<meta property="og:url" content="http://example.com/2018/08/04/Nginx%E4%BD%9C%E4%B8%BA%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一.负载均衡简单的来说。可以减少服务器的压力，将原本一台服务器所要承受的访问量分给了多台，并提高了项目的可用性，当一台服务器挂掉的时候也不会导致整个项目瘫痪。     配置语法: 二.nginx实现负载均衡nginx作为负载均衡服务器，用户请求先到达nginx，再由nginx根据负载配置将请求转发至 tomcat服务器。  nginx负载均衡服务器：192.168.14.129  tomcat1">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/hUCoaQe.png">
+<meta property="og:image" content="https://i.imgur.com/WUiEvBf.png">
+<meta property="og:image" content="https://i.imgur.com/spzvdPX.png">
+<meta property="article:published_time" content="2018-08-03T16:30:22.000Z">
+<meta property="article:modified_time" content="2018-12-16T00:57:53.579Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/hUCoaQe.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Nginx作为负载均衡" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/08/04/Nginx%E4%BD%9C%E4%B8%BA%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" class="article-date">
+  <time datetime="2018-08-03T16:30:22.000Z" itemprop="datePublished">2018-08-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Nginx作为负载均衡
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<h1 id="一-负载均衡"><a href="#一-负载均衡" class="headerlink" title="一.负载均衡"></a>一.负载均衡</h1><p>简单的来说。可以减少服务器的压力，将原本一台服务器所要承受的访问量分给了多台，并提高了项目的可用性，当一台服务器挂掉的时候也不会导致整个项目瘫痪。  </p>
+<p><img src="https://i.imgur.com/hUCoaQe.png"></p>
+<p><img src="https://i.imgur.com/WUiEvBf.png"></p>
+<h2 id="配置语法"><a href="#配置语法" class="headerlink" title="配置语法:"></a>配置语法:</h2><p><img src="https://i.imgur.com/spzvdPX.png"></p>
+<h1 id="二-nginx实现负载均衡"><a href="#二-nginx实现负载均衡" class="headerlink" title="二.nginx实现负载均衡"></a>二.nginx实现负载均衡</h1><p>nginx作为负载均衡服务器，用户请求先到达nginx，再由nginx根据负载配置将请求转发至 tomcat服务器。<br>  nginx负载均衡服务器：192.168.14.129<br>  tomcat1服务器：192.168.14.131<br>  tomcat2服务器：192.168.14.134<br>我们将两个相同的项目分别放到了131与134服务器中，当我们通过129负载访问项目接口时，nginx会自动将请求轮流分配给131与134来执行。  </p>
+<hr>
+<h2 id="2-1配置"><a href="#2-1配置" class="headerlink" title="2.1配置:"></a>2.1配置:</h2><p>编辑nginx.conf配置文件  在http里添加以下配置  </p>
+<pre><code>upstream mytomcat&#123;
+    server 192.168.14.131:8080;
+    server 192.168.14.134:8080;
+    &#125;  </code></pre>
+<p>在server里添加以下配置  </p>
+<pre><code>server &#123;  
+listen       80;
+server_name  192.168.14.129;  //所有请求都到这里去找分配 
+
+#charset koi8-r;
+access_log  /var/log/nginx/test_proxy.access.log  main;
+resolver  8.8.8.8;
+
+location / &#123;
+    proxy_pass http://mytomcat;  //使用mytomcat分配规则，即nginx.conf添加的upstream节点
+
+
+    #include proxy_params;
+    proxy_redirect default;  //下面为代理配置
+
+    proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+
+            proxy_connect_timeout 30;
+            proxy_send_timeout 60;
+            proxy_read_timeout 60;
+
+            proxy_buffer_size 32k;
+            proxy_buffering on;
+            proxy_buffers 4 128k;
+            proxy_busy_buffers_size 256k;
+            proxy_max_temp_file_size 256k;
+&#125;  </code></pre>
+<hr>
+<h2 id="2-2-server参数解释"><a href="#2-2-server参数解释" class="headerlink" title="2.2 server参数解释:"></a>2.2 server参数解释:</h2><ol>
+<li>down   当前的server暂时不参与负载均衡  </li>
+<li>backup  预留的备份服务器  </li>
+<li>max_fails 允许请求失败的次数  </li>
+<li>fail_ timeout  经过max_fails失败后,服务暂停的时间  </li>
+<li>max_conns  限制最大的接收的连接数  </li>
+<li>weight   默认为1.weight越大，负载的权重就越大。  </li>
+</ol>
+<hr>
+<h2 id="2-3-nginx轮询策略"><a href="#2-3-nginx轮询策略" class="headerlink" title="2.3 nginx轮询策略"></a>2.3 nginx轮询策略</h2><ol>
+<li>轮询 按时间顺序逐一分配到不同的后端服务器  </li>
+<li>加权轮询  weight值越大,分配到的访问几率越高  </li>
+<li>ip_  hash 每个请求按访问ip的hash结果分配,这样来自同一个ip的固定访问一个后端服务器  </li>
+<li>url_ hash  按照访问的URL的hash结果来分配请求,是每个URL定向到同一个后端服务器least_conn最少链接数,哪个机器连接数少就分发</li>
+<li>最少hash关键字值     hash自定义key </li>
+</ol>
+<p>例:</p>
+<pre><code>upstream mytomcat&#123;
+    hash $request_utl;   //url_hash
+    server 192.168.14.131:8080;
+    server 192.168.14.134:8080;
+    &#125;</code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2018/08/04/Nginx%E4%BD%9C%E4%B8%BA%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" data-id="ckibpb0ef000k8cj0ebae8zlf" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/04/Nginx%E4%BD%9C%E4%B8%BA%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Nginx作为缓存服务
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/03/Nginx%E4%BD%9C%E4%B8%BA%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Nginx作为代理服务</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LVS/">LVS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Nginx/">Nginx</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Zabbix/">Zabbix</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/12/02/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/03/CloudBoot/">CloudBoot</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/01/LVS%E9%9B%86%E7%BE%A4-NAT%E6%A8%A1%E5%BC%8F/">LVS集群-NAT模式</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/13/Docker%E7%A7%81%E6%9C%89registry%20Harbor/">Docker私有registry Harbor</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/12/Docker%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86/">Docker镜像管理</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
