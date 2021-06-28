@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2021/06/28/meigui/</loc>
+    
+    <lastmod>2021-06-28</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2018/12/08/index/</loc>
     
     <lastmod>2020-12-05</lastmod>
@@ -195,13 +202,6 @@
 
   
   <url>
-    <loc>http://yoursite.com/categories/Linux/</loc>
-    <lastmod>2021-06-28</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/categories/Docker/</loc>
     <lastmod>2021-06-28</lastmod>
     <changefreq>daily</changefreq>
@@ -209,7 +209,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/LVS/</loc>
+    <loc>http://yoursite.com/categories/Linux/</loc>
     <lastmod>2021-06-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -224,6 +224,13 @@
   
   <url>
     <loc>http://yoursite.com/categories/Nginx/</loc>
+    <lastmod>2021-06-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/categories/LVS/</loc>
     <lastmod>2021-06-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
